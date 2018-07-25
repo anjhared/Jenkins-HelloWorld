@@ -2,19 +2,17 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Execute Ansible Play') {
             steps {
-                echo 'Building..'
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
+                wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+				ansiblePlaybook(
+					playbook: "${WORKSPACE}/ansible/plays/demoplays.yml",
+					inventory: "${WORKSPACE}/ansible/inventory/hosts.yml",
+					extras: "-u devops",
+					extraVars: [
+						jenkins_workspace: "${WORKSPACE}"
+				)
+			}
             }
         }
     }
